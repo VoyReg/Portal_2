@@ -1,0 +1,100 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://level_end.gd" type="Script" id=1]
+[ext_resource path="res://BG.jpg" type="Texture" id=3]
+[ext_resource path="res://Player.gd" type="Script" id=4]
+[ext_resource path="res://PortalGun/scene.gltf" type="PackedScene" id=5]
+[ext_resource path="res://gun_script.gd" type="Script" id=6]
+[ext_resource path="res://portal_script.gd" type="Script" id=7]
+[ext_resource path="res://portal_script_2.gd" type="Script" id=8]
+
+[sub_resource type="CubeMesh" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="ConcavePolygonShape" id=4]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="SphereShape" id=17]
+
+[sub_resource type="CubeMesh" id=13]
+
+[sub_resource type="SpatialMaterial" id=14]
+albedo_color = Color( 0.00392157, 0.0196078, 1, 1 )
+
+[sub_resource type="BoxShape" id=15]
+
+[sub_resource type="SpatialMaterial" id=16]
+albedo_color = Color( 0.92549, 0.0666667, 0.0666667, 1 )
+
+[sub_resource type="CapsuleMesh" id=18]
+
+[sub_resource type="CapsuleShape" id=19]
+
+[node name="Spatial" type="Spatial"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0856133, 0.0678406, 0.00453377 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 200, 0, 0, 0, 0.5, 0, 0, 0, 200, 0, 0, 0 )
+mesh = SubResource( 1 )
+material/0 = SubResource( 2 )
+
+[node name="StaticBody" type="StaticBody" parent="MeshInstance"]
+
+[node name="CollisionShape" type="CollisionShape" parent="MeshInstance/StaticBody"]
+shape = SubResource( 4 )
+
+[node name="KinematicBody" type="KinematicBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0 )
+script = ExtResource( 4 )
+
+[node name="CollisionShape" type="CollisionShape" parent="KinematicBody"]
+shape = SubResource( 17 )
+
+[node name="Camera" type="Camera" parent="KinematicBody"]
+fov = 45.0
+
+[node name="scene" parent="KinematicBody/Camera" instance=ExtResource( 5 )]
+transform = Transform( 0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 1, 0, -0.5 )
+script = ExtResource( 6 )
+
+[node name="Position3D" type="Position3D" parent="KinematicBody/Camera/scene"]
+
+[node name="Portal1" type="MeshInstance" parent="."]
+transform = Transform( 2.04351, -0.0137414, 0.00014558, 0.00675431, 4.15756, -5.04687e-05, -0.00106524, 0.000759347, 0.278954, -29.8363, 5.47029, 0.0473824 )
+mesh = SubResource( 13 )
+material/0 = SubResource( 14 )
+
+[node name="Area" type="Area" parent="Portal1"]
+script = ExtResource( 7 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Portal1/Area"]
+shape = SubResource( 15 )
+
+[node name="Portal2" type="MeshInstance" parent="."]
+transform = Transform( 2.04352, 0, 0, 0, 4.15758, 0, 0, 0, 0.278954, 2.67782, 5.59281, -14.3679 )
+mesh = SubResource( 13 )
+material/0 = SubResource( 16 )
+
+[node name="Area" type="Area" parent="Portal2"]
+script = ExtResource( 8 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Portal2/Area"]
+shape = SubResource( 15 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="."]
+transform = Transform( 5.65685, 0, 0.707107, 0, 10, 0, -5.65685, 0, 0.707107, 60, 10, 60 )
+mesh = SubResource( 18 )
+material/0 = null
+
+[node name="Area" type="Area" parent="MeshInstance2"]
+script = ExtResource( 1 )
+
+[node name="CollisionShape" type="CollisionShape" parent="MeshInstance2/Area"]
+transform = Transform( 1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.3, 0, 0, 0 )
+shape = SubResource( 19 )
+
+[connection signal="body_entered" from="Portal1/Area" to="Portal1/Area" method="_on_Area_body_entered"]
+[connection signal="body_entered" from="Portal2/Area" to="Portal2/Area" method="_on_Area_body_entered"]
+[connection signal="area_shape_entered" from="MeshInstance2/Area" to="MeshInstance2/Area" method="_on_Area_area_shape_entered"]
